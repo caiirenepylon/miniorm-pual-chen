@@ -1,6 +1,66 @@
 // TODO: implement query builder here
 
-class ORM { }
+class QRender {
+  content: string;
+  table: string;
+  obj: QRender;
+
+  constructor(tbl: string, text: string) {
+    this.table = tbl;
+    this.content = text;
+  }
+
+  public render(): string {
+    return this.content
+  }
+
+  public select(part1: string, ...rest: string[]): object {
+    const all: string[] = [...rest];
+    let r: string = part1 + ", "
+    for (const [index, part] of all.entries()) {
+      r += part + ", "
+    }
+    let cols: string = r.substring(0, r.length - 2)
+    console.log("cols", cols);
+    this.content = "SELECT " + cols + " FROM " + this.table + ";"
+    console.log("query", this.content);
+    let obj = new QRender(this.table, this.content);
+    return obj;
+  }
+
+  public cond(a: string, b: string, c: string): object {
+    this.content = a + " " + b + " " + c
+    let obj = new QRender(this.table, this.content);
+    return obj;
+  }
+
+  // query: o.table("products").select("id", "upc", "volume").where(
+  //   o.cond("volume", ">", 300),
+  //   o.cond("upc", "=", "1337"),
+  // ),
+  public where(part1: Function, ...rest: Function[]): object {
+    const all: Function[] = [...rest];
+    // let r: string = part1 + ", "
+    // for (const [index, part] of all.entries()) {
+    //   r += part + ", "
+    // }
+    // let cols: string = r.substring(0, r.length - 2)
+    // console.log("cols", cols);
+    // this.content = "SELECT " + cols + " FROM " + this.table + ";"
+    // console.log("query", this.content);
+    // let obj = new QRender(this.table, this.content);
+    return obj;
+  }
+}
+
+class ORM {
+  public table(tbl: string): object {
+    const q = "SELECT * FROM " + tbl + ";"
+    let s = new QRender(tbl, q)
+    return s
+  }
+
+}
 
 
 //////////// TESTING CODE BELOW ///////////////////////
@@ -15,17 +75,17 @@ const TEST_CASES = [
     query: o.table("users"),
     expected: "SELECT * FROM users;"
   }),
-  // () => ({
-  //   query: o.table("users").select("id", "email"),
-  //   expected: "SELECT id, email FROM users;",
-  // }),
-  // () => ({
-  //   query: o.table("products").select("id", "upc", "volume").where(
-  //     o.cond("volume", ">", 300),
-  //     o.cond("upc", "=", "1337"),
-  //   ),
-  //   expected: "SELECT id, upc, volume FROM products WHERE volume > 300 AND upc = '1337';",
-  // }),
+  () => ({
+    query: o.table("users").select("id", "email"),
+    expected: "SELECT id, email FROM users;",
+  }),
+  () => ({
+    query: o.table("products").select("id", "upc", "volume").where(
+      o.cond("volume", ">", 300),
+      o.cond("upc", "=", "1337"),
+    ),
+    expected: "SELECT id, upc, volume FROM products WHERE volume > 300 AND upc = '1337';",
+  }),
   // () => ({
   //   query: o.table("products").select("product_id", "price").alias("p"),
   //   expected: "SELECT p.product_id, p.price FROM products p;",
@@ -47,7 +107,6 @@ const TEST_CASES = [
   //    };
   // },
 ];
-
 
 // Nicer assertion
 const stringAssert = (testNum: number, obj: any, expected: string) => {
