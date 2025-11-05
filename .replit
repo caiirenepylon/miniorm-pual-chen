@@ -1,0 +1,8 @@
+modules = ["bun-1.2"]
+run = "bun run main.ts"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "bun run main.ts"]
