@@ -1,6 +1,6 @@
 // TODO: implement query builder here
 
-class ORM {}
+class ORM { }
 
 
 //////////// TESTING CODE BELOW ///////////////////////
@@ -47,6 +47,7 @@ const TEST_CASES = [
   //    };
   // },
 ];
+
 
 // Nicer assertion
 const stringAssert = (testNum: number, obj: any, expected: string) => {
